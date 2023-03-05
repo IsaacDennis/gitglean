@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"text/template"
+	"flag"
 
 	"github.com/google/go-github/v50/github"
 )
@@ -66,7 +67,10 @@ func ListRecentRepositories(gh *github.Client, user string) ([]*github.Repositor
 	return gh.Repositories.List(context.Background(), user, &repoOptions)
 }
 func main() {
-	var name = "YOUR_NAME"
+	var name string
+	flag.StringVar(&name, "name", "", "username to use in GitHub API requests")
+	flag.Parse()
+
 	gh := github.NewClient(nil)
 	events, _, _ := ListEventsPerformedByUser(gh, name)
 	repos, _, _ := ListRecentRepositories(gh, name)
