@@ -59,7 +59,7 @@ func ListEventsPerformedByUser(gh *github.Client, user string) ([]*github.Event,
 func ListRecentRepositories(gh *github.Client, user string) ([]*github.Repository, *github.Response, error) {
 	repoOptions := github.RepositoryListOptions{
 		Visibility: "public",
-		Sort: "updated",
+		Sort: "created",
 		Direction: "desc",
 		ListOptions: github.ListOptions{1, 5},
 	}
