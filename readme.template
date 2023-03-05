@@ -2,5 +2,5 @@
 
 **Recent contributions**
 {{range .Contributions}}
-* {{ .Type }} on {{ .Repo.Name }}
+* {{. | humanizeEvent}}
 {{- end}}
