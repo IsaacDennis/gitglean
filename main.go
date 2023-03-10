@@ -16,12 +16,10 @@ type Info struct {
 	Contributions []*github.Event
 }
 
-//go:embed readme.template
-var templ string
 var funcMap template.FuncMap = template.FuncMap{
 	"humanizeEvent": humanizeEvent,
 }
-var readme = template.Must(template.New("readme").Funcs(funcMap).Parse(templ))
+
 
 func createMDLink(text, url string) string {
 	return fmt.Sprintf("[%s](%s)", text, url)
@@ -67,10 +65,18 @@ func ListRecentRepositories(gh *github.Client, user string) ([]*github.Repositor
 	return gh.Repositories.List(context.Background(), user, &repoOptions)
 }
 func main() {
-	var name string
+	var name, templatePath, output string
 	flag.StringVar(&name, "name", "", "username to use in GitHub API requests")
+	flag.StringVar(&templatePath, "template", "", "path to template file")
+	flag.StringVar(&output, "output", "README.md", "path to output file")
 	flag.Parse()
 
+	templ, err := os.ReadFile(templatePath)
+	if err != nil {
+		fmt.Printf("Error while loading template file: %s\n", err.Error())
+		os.Exit(1)
+	}
+	var readme = template.Must(template.New("readme").Funcs(funcMap).Parse(string(templ)))
 	gh := github.NewClient(nil)
 	events, _, _ := ListEventsPerformedByUser(gh, name)
 	repos, _, _ := ListRecentRepositories(gh, name)
