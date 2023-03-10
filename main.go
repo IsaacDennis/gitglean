@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	_ "embed"
+	"flag"
 	"fmt"
 	"os"
 	"text/template"
-	"flag"
 
 	"github.com/google/go-github/v50/github"
 )
@@ -50,16 +50,16 @@ func humanizeEvent(e *github.Event) string {
 	return fmt.Sprintf(":bangbang: %s (not implemented)", *e.Type)
 }
 
-func ListEventsPerformedByUser(gh *github.Client, user string) ([]*github.Event, *github.Response, error){
-	listOptions := github.ListOptions {1, 5}
+func ListEventsPerformedByUser(gh *github.Client, user string) ([]*github.Event, *github.Response, error) {
+	listOptions := github.ListOptions{1, 5}
 	return gh.Activity.ListEventsPerformedByUser(context.Background(), user, true, &listOptions)
 }
 
 func ListRecentRepositories(gh *github.Client, user string) ([]*github.Repository, *github.Response, error) {
 	repoOptions := github.RepositoryListOptions{
-		Visibility: "public",
-		Sort: "created",
-		Direction: "desc",
+		Visibility:  "public",
+		Sort:        "created",
+		Direction:   "desc",
 		ListOptions: github.ListOptions{1, 5},
 	}
 	return gh.Repositories.List(context.Background(), user, &repoOptions)
