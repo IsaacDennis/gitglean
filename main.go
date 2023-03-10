@@ -20,7 +20,6 @@ var funcMap template.FuncMap = template.FuncMap{
 	"humanizeEvent": humanizeEvent,
 }
 
-
 func createMDLink(text, url string) string {
 	return fmt.Sprintf("[%s](%s)", text, url)
 }
@@ -65,10 +64,10 @@ func ListRecentRepositories(gh *github.Client, user string) ([]*github.Repositor
 	return gh.Repositories.List(context.Background(), user, &repoOptions)
 }
 func main() {
-	var name, templatePath, output string
+	var name, templatePath, outputPath string
 	flag.StringVar(&name, "name", "", "username to use in GitHub API requests")
 	flag.StringVar(&templatePath, "template", "", "path to template file")
-	flag.StringVar(&output, "output", "README.md", "path to output file")
+	flag.StringVar(&outputPath, "output", "README.md", "path to output file")
 	flag.Parse()
 
 	templ, err := os.ReadFile(templatePath)
@@ -76,12 +75,19 @@ func main() {
 		fmt.Printf("Error while loading template file: %s\n", err.Error())
 		os.Exit(1)
 	}
+
 	var readme = template.Must(template.New("readme").Funcs(funcMap).Parse(string(templ)))
 	gh := github.NewClient(nil)
 	events, _, _ := ListEventsPerformedByUser(gh, name)
 	repos, _, _ := ListRecentRepositories(gh, name)
 	info := Info{repos, events}
-	if err := readme.Execute(os.Stdout, info); err != nil {
+
+	outputFile, err := os.Create(outputPath)
+	if err != nil {
+		fmt.Printf("Error while creating output file: %s\n", err.Error())
+		os.Exit(1)
+	}
+	if err := readme.Execute(outputFile, info); err != nil {
 		fmt.Printf("error: %s", err.Error())
 		os.Exit(1)
 	}
