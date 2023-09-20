@@ -23,6 +23,11 @@ var funcMap template.FuncMap = template.FuncMap{
 func createMDLink(text, url string) string {
 	return fmt.Sprintf("[%s](%s)", text, url)
 }
+
+func createOrgLink(text, url string) string {
+	return fmt.Sprintf("[[%s][%s]]", url, text)
+}
+
 func humanizeEvent(e *github.Event) string {
 	repoName := *e.Repo.Name
 	repoURL := "https://github.com/" + repoName
