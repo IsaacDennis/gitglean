@@ -11,6 +11,9 @@ inputs:
   template-path:
     description: 'Path to template file'
     required: true
+  format:
+    description: 'Export format (md, org)'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -22,5 +25,5 @@ runs:
       shell: bash
     - run: cd ${{ github.action_path }} && go mod download
       shell: bash
-    - run: cd ${{ github.action_path }} && go run main.go --name ${{ inputs.username }} --template ${{ inputs.template-path }} --output ${{ inputs.output-path }}
+    - run: cd ${{ github.action_path }} && go run main.go --name ${{ inputs.username }} --template ${{ inputs.template-path }} --output ${{ inputs.output-path }} --format ${{ inputs.format }}
       shell: bash
