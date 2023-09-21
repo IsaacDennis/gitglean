@@ -2,5 +2,5 @@
 
 **Recent contributions**
 {{range .Contributions}}
-* {{. | humanizeEvent}}
+* {{humanizeEvent . $.Format}}
 {{- end}}

@@ -11,10 +11,18 @@ import (
 	"github.com/google/go-github/v50/github"
 )
 
+type Format string
+
 type Info struct {
 	Repos         []*github.Repository
 	Contributions []*github.Event
+	Format        Format
 }
+
+const (
+	Markdown Format = "md"
+	Org      Format = "org"
+)
 
 var funcMap template.FuncMap = template.FuncMap{
 	"humanizeEvent": humanizeEvent,
@@ -28,10 +36,16 @@ func createOrgLink(text, url string) string {
 	return fmt.Sprintf("[[%s][%s]]", url, text)
 }
 
-func humanizeEvent(e *github.Event) string {
+func humanizeEvent(e *github.Event, format Format) string {
 	repoName := *e.Repo.Name
 	repoURL := "https://github.com/" + repoName
-	link := createMDLink(repoName, repoURL)
+	var link string
+	switch format {
+	case Markdown:
+		link = createMDLink(repoName, repoURL)
+	case Org:
+		link = createOrgLink(repoName, repoURL)
+	}
 	payload, _ := e.ParsePayload()
 	switch payload := payload.(type) {
 	case *github.PushEvent:
@@ -69,10 +83,11 @@ func ListRecentRepositories(gh *github.Client, user string) ([]*github.Repositor
 	return gh.Repositories.List(context.Background(), user, &repoOptions)
 }
 func main() {
-	var name, templatePath, outputPath string
+	var name, templatePath, outputPath, format string
 	flag.StringVar(&name, "name", "", "username to use in GitHub API requests")
 	flag.StringVar(&templatePath, "template", "", "path to template file")
-	flag.StringVar(&outputPath, "output", "README.md", "path to output file")
+	flag.StringVar(&outputPath, "output", "README", "path to output file")
+	flag.StringVar(&format, "format", "md", "export format (md, org)")
 	flag.Parse()
 
 	templ, err := os.ReadFile(templatePath)
@@ -85,7 +100,7 @@ func main() {
 	gh := github.NewClient(nil)
 	events, _, _ := ListEventsPerformedByUser(gh, name)
 	repos, _, _ := ListRecentRepositories(gh, name)
-	info := Info{repos, events}
+	info := Info{repos, events, Format(format)}
 
 	outputFile, err := os.Create(outputPath)
 	if err != nil {
