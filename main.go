@@ -49,21 +49,21 @@ func humanizeEvent(e *github.Event, format Format) string {
 	payload, _ := e.ParsePayload()
 	switch payload := payload.(type) {
 	case *github.PushEvent:
-		return fmt.Sprintf(":arrow_heading_up: Pushed %d commits to %s", len(payload.Commits), link)
+		return fmt.Sprintf("⤴️ Pushed %d commits to %s", len(payload.Commits), link)
 	case *github.WatchEvent:
-		return fmt.Sprintf(":star: Starred %s", link)
+		return fmt.Sprintf("⭐ Starred %s", link)
 	case *github.PublicEvent:
-		return fmt.Sprintf(":unlock: Made %s public", link)
+		return fmt.Sprintf("🔓 Made %s public", link)
 	case *github.CommitCommentEvent:
-		return fmt.Sprintf(":memo: Created a commit comment in %s", link)
+		return fmt.Sprintf("📝 Created a commit comment in %s", link)
 	case *github.CreateEvent:
-		return fmt.Sprintf(":heavy_plus_sign: Created a branch/tag in %s", link)
+		return fmt.Sprintf("➕ Created a branch/tag in %s", link)
 	case *github.DeleteEvent:
-		return fmt.Sprintf(":heavy_minus_sign: Deleted a branch/tag in %s", link)
+		return fmt.Sprintf("➖ Deleted a branch/tag in %s", link)
 	case *github.ForkEvent:
-		return fmt.Sprintf(":fork_and_knife: Forked %s", link)
+		return fmt.Sprintf("🍴 Forked %s", link)
 	case *github.GollumEvent:
-		return fmt.Sprintf(":page_with_curl: Created/updated a wiki page in %s", link)
+		return fmt.Sprintf("📃 Created/updated a wiki page in %s", link)
 	}
 	return fmt.Sprintf(":bangbang: %s (not implemented)", *e.Type)
 }
