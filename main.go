@@ -40,12 +40,14 @@ func humanizeEvent(e *github.Event, format Format) string {
 	repoName := *e.Repo.Name
 	repoURL := "https://github.com/" + repoName
 	var link string
+	var createLink func(text, url string) string
 	switch format {
 	case Markdown:
-		link = createMDLink(repoName, repoURL)
+		createLink = createMDLink
 	case Org:
-		link = createOrgLink(repoName, repoURL)
+		createLink = createOrgLink
 	}
+	link = createLink(repoName, repoURL)
 	payload, _ := e.ParsePayload()
 	switch payload := payload.(type) {
 	case *github.PushEvent:
@@ -64,6 +66,13 @@ func humanizeEvent(e *github.Event, format Format) string {
 		return fmt.Sprintf("🍴 Forked %s", link)
 	case *github.GollumEvent:
 		return fmt.Sprintf("📃 Created/updated a wiki page in %s", link)
+	case *github.PullRequestEvent:
+		pr := payload.PullRequest
+		number := *pr.Number
+		title := *pr.Title
+		requestLink := createLink(fmt.Sprintf("#%d %s", number, title), *pr.HTMLURL)
+		return fmt.Sprintf("⛙ Opened %s in %s", requestLink, link)
+
 	}
 	return fmt.Sprintf(":bangbang: %s (not implemented)", *e.Type)
 }
