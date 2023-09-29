@@ -1,5 +1,5 @@
-name: 'Auto-README'
-description: 'Automatically generate a textual profile README.md with your GitHub info'
+name: 'Git Glean'
+description: 'Automatically generate files with Git forges info'
 inputs:
   username:
     description: 'Username to use in GitHub API requests'

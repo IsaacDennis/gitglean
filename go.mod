@@ -1,4 +1,4 @@
-module github.com/IsaacDennis/auto-readme
+module github.com/IsaacDennis/gitglean
 
 go 1.19
 
