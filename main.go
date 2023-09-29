@@ -82,26 +82,35 @@ func humanizeEvent(e *github.Event, format Format) string {
 	return fmt.Sprintf(":bangbang: %s (not implemented)", *e.Type)
 }
 
-func ListEventsPerformedByUser(gh *github.Client, user string) ([]*github.Event, *github.Response, error) {
-	listOptions := github.ListOptions{1, 5}
+func ListEventsPerformedByUser(gh *github.Client, user string, page, perPage int) ([]*github.Event, *github.Response, error) {
+	listOptions := github.ListOptions{
+		Page:    page,
+		PerPage: perPage,
+	}
 	return gh.Activity.ListEventsPerformedByUser(context.Background(), user, true, &listOptions)
 }
 
-func ListRecentRepositories(gh *github.Client, user string) ([]*github.Repository, *github.Response, error) {
+func ListRecentRepositories(gh *github.Client, user string, page, perPage int) ([]*github.Repository, *github.Response, error) {
 	repoOptions := github.RepositoryListOptions{
-		Visibility:  "public",
-		Sort:        "created",
-		Direction:   "desc",
-		ListOptions: github.ListOptions{1, 5},
+		Visibility: "public",
+		Sort:       "created",
+		Direction:  "desc",
+		ListOptions: github.ListOptions{
+			Page:    page,
+			PerPage: perPage,
+		},
 	}
 	return gh.Repositories.List(context.Background(), user, &repoOptions)
 }
 func main() {
 	var name, templatePath, outputPath, format string
+	var page, perPage int
 	flag.StringVar(&name, "name", "", "username to use in GitHub API requests")
 	flag.StringVar(&templatePath, "template", "", "path to template file")
 	flag.StringVar(&outputPath, "output", "README", "path to output file")
 	flag.StringVar(&format, "format", "md", "export format (md, org)")
+	flag.IntVar(&page, "page", 1, "Page of results to retrieve")
+	flag.IntVar(&perPage, "perPage", 1, "Number of results to include per page")
 	flag.Parse()
 
 	templ, err := os.ReadFile(templatePath)
@@ -112,8 +121,8 @@ func main() {
 
 	var readme = template.Must(template.New("readme").Funcs(funcMap).Parse(string(templ)))
 	gh := github.NewClient(nil)
-	events, _, _ := ListEventsPerformedByUser(gh, name)
-	repos, _, _ := ListRecentRepositories(gh, name)
+	events, _, _ := ListEventsPerformedByUser(gh, name, page, perPage)
+	repos, _, _ := ListRecentRepositories(gh, name, page, perPage)
 	info := Info{repos, events, Format(format)}
 
 	outputFile, err := os.Create(outputPath)
