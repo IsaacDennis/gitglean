@@ -16,7 +16,7 @@ inputs:
     required: true
   page:
     description: 'Page of results to retrieve'
-    required: false
+    required: true
   perPage:
     description: 'Number of results to include per page'
     required: true
