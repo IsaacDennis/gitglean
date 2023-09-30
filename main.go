@@ -28,9 +28,14 @@ func Eq[A comparable](a *A, b A) bool {
 	return *a == b
 }
 
+func Deref[T any](p *T) T {
+	return *p
+}
+
 var funcMap template.FuncMap = template.FuncMap{
 	"humanizeEvent": humanizeEvent,
 	"eqstr":         Eq[string],
+	"deref":         Deref[string],
 }
 
 func createMDLink(text, url string) string {
