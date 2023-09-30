@@ -1,4 +1,4 @@
-# Auto-README action
+# gitglean action
 
 Automatically generate a textual profile README.md with your GitHub info.
 
@@ -20,7 +20,7 @@ Automatically generate a textual profile README.md with your GitHub info.
 
 ``` yaml
 uses: actions/checkout@v3
-uses: IsaacDennis/auto-readme@<version>
+uses: IsaacDennis/gitglean@<version>
 with:
   username: IsaacDennis
   template-path: ${{ github.workspace }}/README.template
